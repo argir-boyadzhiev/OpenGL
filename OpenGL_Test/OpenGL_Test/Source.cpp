@@ -4,6 +4,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Shader.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -118,6 +122,8 @@ int main() {
 	ourShader.setInt("texture2", 1);
 	ourShader.setFloat("ratio", ratio);
 
+	
+
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -132,8 +138,25 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
+		//matrix
+		glm::mat4 trans1 = glm::mat4(1.0f);
+		trans1 = glm::translate(trans1, glm::vec3(0.5f, -0.5f, 0.0f));
+		trans1 = glm::rotate(trans1, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		glm::mat4 trans2 = glm::mat4(1.0f);
+		trans2 = glm::scale(trans2, glm::vec3(sin((double)glfwGetTime()), cos((float)glfwGetTime()), 0));
+		trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
+
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 		ourShader.use();
+
 		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+		ourShader.use();
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);

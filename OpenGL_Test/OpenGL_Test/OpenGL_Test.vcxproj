@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLM\glm;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLM\glm;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLM\glm;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLAD\include;C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLM\glm;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\User\Desktop\the elder folders\programirane\cpp lib\GLFW\glfw-3.3.2.bin.WIN64\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -95,6 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +109,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
