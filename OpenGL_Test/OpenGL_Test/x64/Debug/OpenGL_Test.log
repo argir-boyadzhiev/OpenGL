@@ -1,4 +1,8 @@
 ﻿  Source.cpp
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(182,18): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(184,18): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(226,13): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(229,13): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(232,16): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(235,16): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(238,16): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(241,16): warning C4305: '-=': truncation from 'double' to 'float'
   OpenGL_Test.vcxproj -> C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\x64\Debug\OpenGL_Test.exe
