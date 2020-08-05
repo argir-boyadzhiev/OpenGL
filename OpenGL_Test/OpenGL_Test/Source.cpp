@@ -185,13 +185,12 @@ int main() {
 	//shader
 	ourShader.use();
 
-	ourShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	ourShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	ourShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	ourShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-	ourShader.setFloat("material.shininess", 32.0f);
-	ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	ourShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	ourShader.setVec3("material.ambient", glm::vec3(0.0215f, 0.1745f, 0.0215f));
+	ourShader.setVec3("material.diffuse", glm::vec3(0.07568f, 0.61424f, 0.07568f));
+	ourShader.setVec3("material.specular", glm::vec3(0.633f, 0.727811f, 0.633f));
+	ourShader.setFloat("material.shininess", 77.0f);
+	ourShader.setVec3("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
+	ourShader.setVec3("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
 	ourShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	
 	//render loop
