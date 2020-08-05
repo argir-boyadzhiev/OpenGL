@@ -53,7 +53,6 @@ int main() {
 
 	Shader ourShader("3.3.shader.vs","3.3.shader.fs");
 	Shader lightShader("lightShader.vs", "lightShader.fs");
-	Shader gouraudShader("gouraudShader.vs", "gouraudShader.fs");
 
 	float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -98,7 +97,7 @@ int main() {
 	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
-	/*
+	
 	glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),
@@ -110,19 +109,6 @@ int main() {
 	glm::vec3(1.5f,  2.0f, -2.5f),
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-	*/
-	glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  -3.0f),
-	glm::vec3(0.0f,  0.0f,  -2.0f),
-	glm::vec3(0.0f,  0.0f,  -1.0f),
-	glm::vec3(0.0f,  0.0f,  0.0f),
-	glm::vec3(0.0f,  0.0f,  1.0f),
-	glm::vec3(1.0f,  0.0f,  -3.0f),
-	glm::vec3(1.0f,  0.0f,  -2.0f),
-	glm::vec3(1.0f,  0.0f,  -1.0f),
-	glm::vec3(1.0f,  0.0f,  0.0f),
-	glm::vec3(1.0f,  0.0f,  1.0f),
 	};
 
 	glm::vec3 lightPosition(0.5, 2, -6);
@@ -199,12 +185,14 @@ int main() {
 	//shader
 	ourShader.use();
 
-	ourShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 0.7f));
-	ourShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-
-	gouraudShader.use();
-	gouraudShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 0.7f));
-	gouraudShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+	ourShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	ourShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	ourShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	ourShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	ourShader.setFloat("material.shininess", 32.0f);
+	ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	ourShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	ourShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -241,17 +229,12 @@ int main() {
 		ourShader.setMat4("view", view);
 		ourShader.setMat4("projection", projection);
 		glm::vec3 nLightPosition = view * glm::vec4(lightPosition,1);
-		ourShader.setVec3("lightPos", nLightPosition);
-
-		gouraudShader.use();
-		gouraudShader.setMat4("view", view);
-		gouraudShader.setMat4("projection", projection);
-		gouraudShader.setVec3("lightPos", nLightPosition);
+		ourShader.setVec3("light.position", nLightPosition);
 
 		ourShader.use();
 
 		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 5; i++)
+		for (unsigned int i = 0; i < 10; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
@@ -262,21 +245,6 @@ int main() {
 			
 			glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(view * model)));
 			ourShader.setMat3("normalMatrix", normalMatrix);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		gouraudShader.use();
-		for (unsigned int i = 5; i < 10; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * (i + 1) * (float)glfwGetTime();
-
-			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			gouraudShader.setMat4("model", model);
-
-			glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(view * model)));
-			gouraudShader.setMat3("normalMatrix", normalMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
