@@ -112,7 +112,7 @@ int main() {
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	glm::vec3 lightPosition(0.5, 2, -6);
+	glm::vec3 lightPosition(0.5, 1, -6);
 
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
@@ -143,7 +143,7 @@ int main() {
 
 	//textures
 
-	unsigned int texture,specularMap,emissionMap;
+	unsigned int texture,specularMap;
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -185,26 +185,6 @@ int main() {
 		std::cout << "Failed to load texture\n";
 	}
 	stbi_image_free(data);
-	
-	//emissionMap
-	glGenTextures(1, &emissionMap);
-	glBindTexture(GL_TEXTURE_2D, emissionMap);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	stbi_set_flip_vertically_on_load(true);
-	data = stbi_load("matrix.jpg", &width, &height, &nrChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	}
-	else {
-		std::cout << "Failed to load texture\n";
-	}
-	stbi_image_free(data);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -213,7 +193,6 @@ int main() {
 
 	ourShader.setInt("material.diffuse", 0);
 	ourShader.setInt("material.specular", 1);
-	ourShader.setInt("material.emission", 2);
 	ourShader.setFloat("material.shininess", 32);
 	ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	ourShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -226,6 +205,13 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		if (lightPosition.z < 6) {
+			lightPosition.z += 0.001;
+		}
+		else {
+			lightPosition.z = -8;
+		}
+
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -235,8 +221,6 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, emissionMap);
 		
 
 		//matrix
@@ -255,8 +239,10 @@ int main() {
 		ourShader.setMat4("view", view);
 		ourShader.setMat4("projection", projection);
 		glm::vec3 nLightPosition = view * glm::vec4(lightPosition,1);
-		ourShader.setVec3("light.position", nLightPosition);
-
+		ourShader.setVec3("light.position", glm::vec3(0, 0, 0));
+		ourShader.setVec3("light.direction", glm::vec3(0, 0, -1));
+		ourShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+		ourShader.setFloat("light.outerCutOff", glm::cos(glm::radians(15.5f)));
 		ourShader.use();
 
 		glBindVertexArray(VAO);
@@ -284,7 +270,7 @@ int main() {
 		lightShader.setMat4("view", view);
 		lightShader.setMat4("projection", projection);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
