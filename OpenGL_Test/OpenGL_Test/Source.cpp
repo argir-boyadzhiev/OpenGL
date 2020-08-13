@@ -64,21 +64,19 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	Shader ourShader("3.3.shader.vs","3.3.shader.fs");
+	Shader ourShader("shaders/shader.vs","shaders/depthShader.fs");
 	
-	Model backpack("C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/Models/Backpack/backpack.obj");
-
-	glm::vec3 lightPosition(0.5, 1, -6);
+	Model backpack("C:/Models/Backpack/backpack.obj");
+	Model longBlock("C:/Models/longBlock/longBlock.obj");
 
 	//shader
 	ourShader.use();
 
-	ourShader.setInt("material.diffuse", 0);
-	ourShader.setInt("material.specular", 1);
 	ourShader.setFloat("material.shininess", 32);
 	ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	ourShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 	ourShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	ourShader.setInt("material.type", 0);
 	
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -87,12 +85,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		if (lightPosition.z < 6) {
-			lightPosition.z += 0.001;
-		}
-		else {
-			lightPosition.z = -8;
-		}
+		
 
 		processInput(window);
 
@@ -116,21 +109,33 @@ int main() {
 		ourShader.use();
 		ourShader.setMat4("view", view);
 		ourShader.setMat4("projection", projection);
-		glm::vec3 nLightPosition = view * glm::vec4(lightPosition,1);
-		ourShader.setVec3("light.position", glm::vec3(0, 0, 0));
-		ourShader.setVec3("light.direction", glm::vec3(0, 0, -1));
-		ourShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-		ourShader.setFloat("light.outerCutOff", glm::cos(glm::radians(15.5f)));
+
+		ourShader.setFloat("light.constant", 1);
+		ourShader.setFloat("light.linear", 0.08);
+		ourShader.setFloat("light.quadratic", 0.02);
+
+		ourShader.setVec3("light.position", camera.Position);
+		ourShader.setVec3("light.direction", camera.Front);
+		ourShader.setFloat("light.cutOff", glm::cos(glm::radians(50.5f)));
+		ourShader.setFloat("light.outerCutOff", glm::cos(glm::radians(60.5f)));
+		ourShader.setVec3("viewPos", camera.Position);
 		ourShader.use();
 
 		glm::mat4 model = glm::mat4(1.0f);
 		ourShader.setMat4("model", model);
 
-		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(view * model)));
+		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(model)));
 		ourShader.setMat3("normalMatrix", normalMatrix);
 
+
+		model = glm::translate(model, glm::vec3(3, 0, 0));
+		ourShader.setMat4("model", model);
 		backpack.Draw(ourShader);
-		
+
+
+		model = glm::translate(model, glm::vec3(3, 0, 3));
+		ourShader.setMat4("model", model);
+		longBlock.Draw(ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
