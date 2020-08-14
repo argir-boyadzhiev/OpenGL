@@ -63,20 +63,13 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
 
-	Shader ourShader("shaders/shader.vs","shaders/depthShader.fs");
+	Shader ourShader("shaders/basicShader.vs","shaders/basicShader.fs");
+	Shader outLine("shaders/shader.vs", "shaders/stencil.fs");
 	
 	Model backpack("C:/Models/Backpack/backpack.obj");
 	Model longBlock("C:/Models/longBlock/longBlock.obj");
-
-	//shader
-	ourShader.use();
-
-	ourShader.setFloat("material.shininess", 32);
-	ourShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	ourShader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	ourShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	ourShader.setInt("material.type", 0);
 	
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -102,44 +95,46 @@ int main() {
 		glm::mat4 view;
 		view = camera.GetViewMatrix();
 		
-
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 model = glm::mat4(1.0f);
+
+		//
+		
 
 		ourShader.use();
 		ourShader.setMat4("view", view);
 		ourShader.setMat4("projection", projection);
-
-		ourShader.setFloat("light.constant", 1);
-		ourShader.setFloat("light.linear", 0.08);
-		ourShader.setFloat("light.quadratic", 0.02);
-
-		ourShader.setVec3("light.position", camera.Position);
-		ourShader.setVec3("light.direction", camera.Front);
-		ourShader.setFloat("light.cutOff", glm::cos(glm::radians(50.5f)));
-		ourShader.setFloat("light.outerCutOff", glm::cos(glm::radians(60.5f)));
-		ourShader.setVec3("viewPos", camera.Position);
-		ourShader.use();
-
-		glm::mat4 model = glm::mat4(1.0f);
 		ourShader.setMat4("model", model);
 
-		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(model)));
-		ourShader.setMat3("normalMatrix", normalMatrix);
+		glEnable(GL_DEPTH_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		model = glm::translate(model, glm::vec3(3, 0, 0));
-		ourShader.setMat4("model", model);
-		backpack.Draw(ourShader);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
 
-
-		model = glm::translate(model, glm::vec3(3, 0, 3));
-		ourShader.setMat4("model", model);
 		longBlock.Draw(ourShader);
+
+		model = glm::scale(model, glm::vec3(1.05, 1.2, 1.2));
+		outLine.use();
+		outLine.setMat4("view", view);
+		outLine.setMat4("projection", projection);
+		outLine.setMat4("model", model);
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		outLine.use();
+		longBlock.Draw(outLine);
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	glfwTerminate();
