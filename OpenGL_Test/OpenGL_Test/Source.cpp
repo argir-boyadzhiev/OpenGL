@@ -63,13 +63,16 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 
 	Shader ourShader("shaders/basicShader.vs","shaders/basicShader.fs");
-	Shader outLine("shaders/shader.vs", "shaders/stencil.fs");
 	
 	Model backpack("C:/Models/Backpack/backpack.obj");
 	Model longBlock("C:/Models/longBlock/longBlock.obj");
+	Model grass("C:/Users/User/Desktop/blender/grass/grass.obj");
 	
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -107,34 +110,20 @@ int main() {
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("model", model);
 
-		glEnable(GL_DEPTH_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-
+		
 		longBlock.Draw(ourShader);
 
-		model = glm::scale(model, glm::vec3(1.05, 1.2, 1.2));
-		outLine.use();
-		outLine.setMat4("view", view);
-		outLine.setMat4("projection", projection);
-		outLine.setMat4("model", model);
 
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-		outLine.use();
-		longBlock.Draw(outLine);
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glEnable(GL_DEPTH_TEST);
+
+		model = glm::translate(model, glm::vec3(0, -0.5, 0));
+		ourShader.setMat4("model", model);
+
+
+		grass.Draw(ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	glfwTerminate();
