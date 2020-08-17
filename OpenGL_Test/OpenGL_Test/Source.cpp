@@ -106,13 +106,13 @@ int main() {
 	glGenBuffers(1, &bufferVBO);
 
 	float vertices[] = {
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
+		-0.3f,  1.0f,  1.0f, 0.75f,
+		-0.3f,  0.7f,  1.0f, 0.25f,
+		 0.3f,  0.7f,  0.0f, 0.25f,
 
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
+		-0.3f,  1.0f,  1.0f, 0.75f,
+		 0.3f,  0.7f,  0.0f, 0.25f,
+		 0.3f,  1.0f,  0.0f, 0.75f
 	};
 
 	glBindVertexArray(bufferVAO);
@@ -140,8 +140,9 @@ int main() {
 
 		processInput(window);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
 		
 
@@ -166,8 +167,11 @@ int main() {
 
 		model = glm::translate(model, glm::vec3(0, -1, -6));
 		ourShader.setMat4("model", model);
+		longBlock.Draw(ourShader);
 
-		
+		model = glm::translate(model, glm::vec3(1, 2, 0));
+		ourShader.setMat4("model", model);
+		backpack.Draw(ourShader);
 		
 
 		//buffer
@@ -178,16 +182,25 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
 		glEnable(GL_DEPTH_TEST);
 		//drawscene
+
+		camera.ChangeYaw(180);
+		view = camera.GetViewMatrix();
+		ourShader.setMat4("view", view);
+		model = glm::mat4(1.0);
+
+		model = glm::translate(model, glm::vec3(0, -1, -6));
+		ourShader.setMat4("model", model);
 		longBlock.Draw(ourShader);
+
 		model = glm::translate(model, glm::vec3(1, 2, 0));
 		ourShader.setMat4("model", model);
 		backpack.Draw(ourShader);
+		camera.ChangeYaw(-180);
+
 		//drawscene
 
 		// second pass
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		planeShader.use();
 		glBindVertexArray(bufferVAO);
@@ -196,6 +209,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		//buffer
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
