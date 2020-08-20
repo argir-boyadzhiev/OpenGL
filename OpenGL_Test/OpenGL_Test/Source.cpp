@@ -79,10 +79,12 @@ int main() {
 
 	Shader ourShader("shaders/basicShader.vs","shaders/basicShader.fs");
 	
+	
 	Model backpack("C:/Models/Backpack/backpack.obj");
 	Model longBlock("C:/Models/longBlock/longBlock.obj");
 
 	//skyBox
+	Shader reflectionShader("shaders/reflectionShader.vs", "shaders/reflectionShader.fs");
 
 	Shader skyBoxShader("shaders/skyBoxShader.vs", "shaders/skyBoxShader.fs");
 
@@ -188,6 +190,8 @@ int main() {
 		glDepthMask(GL_TRUE);
 		//skybox
 		
+		
+
 
 		ourShader.use();
 		ourShader.setMat4("view", view);
@@ -201,7 +205,18 @@ int main() {
 		ourShader.setMat4("model", model);
 		backpack.Draw(ourShader);
 		
+		//reflection
 
+		model = glm::translate(model, glm::vec3(0, -1, -6));
+		reflectionShader.use();
+		reflectionShader.setMat4("model", model);
+		reflectionShader.setMat4("view", view);
+		reflectionShader.setMat4("projection", projection);
+		reflectionShader.setInt("skybox", 0);
+		reflectionShader.setVec3("cameraPos", camera.Position);
+		backpack.Draw(reflectionShader);
+
+		//reflection
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
