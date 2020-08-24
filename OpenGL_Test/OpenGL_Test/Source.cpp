@@ -65,17 +65,6 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
-	
-	std::vector<std::string> faces
-	{
-		"skybox/right.jpg",
-			"skybox/left.jpg",
-			"skybox/top.jpg",
-			"skybox/bottom.jpg",
-			"skybox/front.jpg",
-			"skybox/back.jpg"
-	};
-	unsigned int cubemapTexture = loadCubemap(faces);
 
 	Shader ourShader("shaders/basicShader.vs","shaders/basicShader.fs");
 	
@@ -83,70 +72,38 @@ int main() {
 	Model backpack("C:/Models/Backpack/backpack.obj");
 	Model longBlock("C:/Models/longBlock/longBlock.obj");
 
-	//skyBox
-	Shader reflectionShader("shaders/reflectionShader.vs", "shaders/reflectionShader.fs");
+	//uniform buffer
+	Shader redShader("shaders/colorShaders/base.vs", "shaders/colorShaders/red.fs");
+	Shader greenShader("shaders/colorShaders/base.vs", "shaders/colorShaders/green.fs");
+	Shader blueShader("shaders/colorShaders/base.vs", "shaders/colorShaders/blue.fs");
+	Shader yellowShader("shaders/colorShaders/base.vs", "shaders/colorShaders/yellow.fs");
 
-	Shader skyBoxShader("shaders/skyBoxShader.vs", "shaders/skyBoxShader.fs");
+	unsigned int uniformBlockIndexRed = glGetUniformBlockIndex(redShader.ID, "Matrices");
+	unsigned int uniformBlockIndexGreen = glGetUniformBlockIndex(greenShader.ID, "Matrices");
+	unsigned int uniformBlockIndexBlue = glGetUniformBlockIndex(blueShader.ID, "Matrices");
+	unsigned int uniformBlockIndexYellow = glGetUniformBlockIndex(yellowShader.ID, "Matrices");
 
-	unsigned int skyBoxVAO, skyBoxVBO;
-	glGenVertexArrays(1, &skyBoxVAO);
-	glGenBuffers(1, &skyBoxVBO);
+	glUniformBlockBinding(redShader.ID, uniformBlockIndexRed, 0);
+	glUniformBlockBinding(greenShader.ID, uniformBlockIndexGreen, 0);
+	glUniformBlockBinding(blueShader.ID, uniformBlockIndexBlue, 0);
+	glUniformBlockBinding(yellowShader.ID, uniformBlockIndexYellow, 0);
 
-	float skyboxVertices[] = {
-		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
+	unsigned int uboMatrices;
+	glGenBuffers(1, &uboMatrices);
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
 
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
-	};
-
-	glBindVertexArray(skyBoxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-
-	// vertex positions
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//skyBox
+	//uniform buffer
 
 	//render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -170,53 +127,33 @@ int main() {
 		float camX = sin(glfwGetTime()) * radius;
 		float camZ = cos(glfwGetTime()) * radius;
 
-		glm::mat4 view;
-		view = camera.GetViewMatrix();
-		
-		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		//skybox
+		glm::mat4 model(1);
 
-		glDepthMask(GL_FALSE);
-		skyBoxShader.use();
-		skyBoxShader.setMat4("view", glm::mat4(glm::mat3(view)));
-		skyBoxShader.setMat4("projection", projection);
-		skyBoxShader.setInt("skybox", 0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glBindVertexArray(skyBoxVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glDepthMask(GL_TRUE);
-		//skybox
-		
-		
+		model = glm::translate(model, glm::vec3(0, 0, 0));
+		redShader.use();
+		redShader.setMat4("model", model);
+		longBlock.Draw(redShader);
 
+		model = glm::translate(model, glm::vec3(0, 0, 2.5));
+		greenShader.use();
+		greenShader.setMat4("model", model);
+		longBlock.Draw(greenShader);
 
-		ourShader.use();
-		ourShader.setMat4("view", view);
-		ourShader.setMat4("projection", projection);
+		model = glm::translate(model, glm::vec3(0, 0, 2.5));
+		blueShader.use();
+		blueShader.setMat4("model", model);
+		longBlock.Draw(blueShader);
 
-		model = glm::translate(model, glm::vec3(0, -1, -6));
-		ourShader.setMat4("model", model);
-		longBlock.Draw(ourShader);
+		model = glm::translate(model, glm::vec3(0, 0, 2.5));
+		yellowShader.use();
+		yellowShader.setMat4("model", model);
+		longBlock.Draw(yellowShader);
 
-		model = glm::translate(model, glm::vec3(1, 2, 0));
-		ourShader.setMat4("model", model);
-		backpack.Draw(ourShader);
-		
-		//reflection
-
-		model = glm::translate(model, glm::vec3(0, -1, -6));
-		reflectionShader.use();
-		reflectionShader.setMat4("model", model);
-		reflectionShader.setMat4("view", view);
-		reflectionShader.setMat4("projection", projection);
-		reflectionShader.setInt("skybox", 0);
-		reflectionShader.setVec3("cameraPos", camera.Position);
-		backpack.Draw(reflectionShader);
-
-		//reflection
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
