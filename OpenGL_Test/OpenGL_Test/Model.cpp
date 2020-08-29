@@ -9,6 +9,7 @@ void Model::Draw(Shader& shader)
 		meshes[i].Draw(shader);
 }
 
+
 void Model::loadModel(std::string path)
 {
 	Assimp::Importer importer;

@@ -30,11 +30,11 @@ public:
         loadModel(path);
     }
     void Draw(Shader& shader);
-private:
     std::vector<Mesh> meshes;
-    std::string directory;
-
     std::vector<Texture> textures_loaded;
+private:
+    
+    std::string directory;
 
     void loadModel(std::string path);
     void processNode(aiNode* node, const aiScene* scene);
