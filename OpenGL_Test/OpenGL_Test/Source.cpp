@@ -70,15 +70,15 @@ int main() {
 	//instance
 	
 
-	Model rock("C:/Models/rock/rock.obj");
+	Model rock("C:/Models/longBlock/longBlock.obj");
 	Model planet("C:/Models/planet/planet.obj");
 
 	unsigned int amount = 64000;
 	glm::mat4* modelMatrices;
 	modelMatrices = new glm::mat4[amount];
 	srand(glfwGetTime()); // initialize random seed	
-	float radius = 50.0;
-	float offset = 2.5f;
+	float radius = 150.0;
+	float offset = 25.0f;
 	for (unsigned int i = 0; i < amount; i++)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
@@ -135,7 +135,7 @@ int main() {
 	//instance
 
 
-	glm::mat4 proj = glm::perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glm::mat4 proj = glm::perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 300.0f);
 
 	nShader.use();
 	nShader.setMat4("projection", proj);
@@ -168,7 +168,6 @@ int main() {
 		asteroidShader.setMat4("view", camera.GetViewMatrix());
 		asteroidShader.setInt("texture_diffuse1", 0);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id);
 		glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id);
 		for (unsigned int i = 0; i < rock.meshes.size(); i++)
 		{

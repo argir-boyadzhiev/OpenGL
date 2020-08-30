@@ -32,6 +32,7 @@ public:
     void Draw(Shader& shader);
     std::vector<Mesh> meshes;
     std::vector<Texture> textures_loaded;
+
 private:
     
     std::string directory;
