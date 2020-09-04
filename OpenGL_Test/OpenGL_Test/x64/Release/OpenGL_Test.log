@@ -1,14 +1,19 @@
 ﻿  Source.cpp
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(144,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(211,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(212,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(216,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(217,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(221,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(222,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(227,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(149,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(154,41): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(226,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(227,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(231,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(232,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(236,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(237,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(242,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 448 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  4 of 505 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     9 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
