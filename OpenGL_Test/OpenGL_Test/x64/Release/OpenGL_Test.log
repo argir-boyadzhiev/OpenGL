@@ -1,15 +1,23 @@
 ﻿  Source.cpp
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(101,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(145,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(146,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(150,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(146,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(147,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(148,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(151,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(155,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(156,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(161,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(152,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(153,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(168,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(216,28): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(217,31): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(267,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(268,11): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(272,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(273,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(277,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(278,10): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\OpenGL_Test\Source.cpp(283,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 439 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  0 of 776 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    9 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   OpenGL_Test.vcxproj -> C:\Users\User\source\repos\OpenGL\OpenGL\OpenGL_Test\x64\Release\OpenGL_Test.exe
