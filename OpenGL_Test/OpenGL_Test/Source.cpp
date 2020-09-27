@@ -25,7 +25,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(char const* path);
 void renderQuad();
-void renderCube();
+void renderScene(Shader shader);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -67,99 +67,31 @@ int main() {
 	}
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 
 	stbi_set_flip_vertically_on_load(true);
 
-	Shader gBufferShader("C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/gBufferShader.vs",
-		"C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/gBufferShader.fs");
-	Shader lPassShader("C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/lPassShader.vs",
-		"C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/lPassShader.fs");
-	Shader shaderLightBox("C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/lightBox.vs",
-		"C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/lightBox.fs");
+	Shader pbShader("C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/pbs/shader_00.vs",
+		"C:/Users/User/source/repos/OpenGL/OpenGL/OpenGL_Test/OpenGL_Test/shaders/pbs/shader_00.fs");
 	
-	Model backpack("C:/Models/Backpack/backpack.obj");
-	std::vector<glm::vec3> objectPositions;
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, 3.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
+	glm::vec3 lightPositions[4];
+	lightPositions[0] = glm::vec3(-0.1f, -0.1f, 0.0f);
+	lightPositions[1] = glm::vec3( 0.1f, -0.1f, 0.0f);
+	lightPositions[2] = glm::vec3( 0.1f,  0.1f, 0.0f);
+	lightPositions[3] = glm::vec3(-0.1f,  0.1f, 0.0f);
 
-	unsigned int gBuffer;
-	glGenFramebuffers(1, &gBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-
-	unsigned int gPosition, gNormal, gColorSpec;
-
-	glGenTextures(1, &gPosition);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-	// - normal color buffer
-	glGenTextures(1, &gNormal);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-
-	// - color + specular color buffer
-	glGenTextures(1, &gColorSpec);
-	glBindTexture(GL_TEXTURE_2D, gColorSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gColorSpec, 0);
-
-	// - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, attachments);
-
-	// create and attach depth buffer (renderbuffer)
-	unsigned int rboDepth;
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-	// finally check if framebuffer is complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "Framebuffer not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// lighting info
-	// -------------
-	const unsigned int NR_LIGHTS = 32;
-	std::vector<glm::vec3> lightPositions;
-	std::vector<glm::vec3> lightColors;
-	srand(13);
-	for (unsigned int i = 0; i < NR_LIGHTS; i++)
-	{
-		// calculate slightly random offsets
-		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
-		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-		// also calculate random color
-		float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
-		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
-		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+	glm::vec3 lightColors[4];
+	lightColors[0] = glm::vec3(300.0f, 000.0f, 000.0f);
+	lightColors[1] = glm::vec3(300.0f, 300.0f, 300.0f);
+	lightColors[2] = glm::vec3(000.0f, 000.0f, 300.0f);
+	lightColors[3] = glm::vec3(000.0f, 300.0f, 000.0f);
+	
+	pbShader.use();
+	pbShader.setFloat("ao", 1.0f);
+	pbShader.setVec3("albedo", glm::vec3(0.5f, 0.0f, 0.0f));
+	for (int i = 0; i < 4; i++) {
+		pbShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+		pbShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 	}
-
-	// shader configuration
-	// --------------------
-	lPassShader.use();
-	lPassShader.setInt("gPosition", 0);
-	lPassShader.setInt("gNormal", 1);
-	lPassShader.setInt("gAlbedoSpec", 2);
 	
 
 	//render loop
@@ -175,78 +107,12 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// 1. geometry pass: render scene's geometry/color data into gbuffer
-		// -----------------------------------------------------------------
-		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 model = glm::mat4(1.0f);
-		gBufferShader.use();
-		gBufferShader.setMat4("projection", projection);
-		gBufferShader.setMat4("view", view);
-		for (unsigned int i = 0; i < objectPositions.size(); i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, objectPositions[i]);
-			model = glm::scale(model, glm::vec3(0.5f));
-			gBufferShader.setMat4("model", model);
-			backpack.Draw(gBufferShader);
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		pbShader.use();
+		pbShader.setMat4("view", camera.GetViewMatrix());
+		pbShader.setMat4("projection", glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f));
+		pbShader.setVec3("camPos", camera.Position);
 
-
-
-		// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
-		// -----------------------------------------------------------------------------------------------------------------------
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		lPassShader.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, gPosition);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, gNormal);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, gColorSpec);
-		// send light relevant uniforms
-		for (unsigned int i = 0; i < lightPositions.size(); i++)
-		{
-			lPassShader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
-			lPassShader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-			// update attenuation parameters and calculate radius
-			const float linear = 0.7;
-			const float quadratic = 1.8;
-			lPassShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
-			lPassShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
-		}
-		lPassShader.setVec3("viewPos", camera.Position);
-		// finally render quad
-		renderQuad();
-
-		// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
-	   // ----------------------------------------------------------------------------------
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
-		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-		// 3. render lights on top of scene
-		// --------------------------------
-		shaderLightBox.use();
-		shaderLightBox.setMat4("projection", projection);
-		shaderLightBox.setMat4("view", view);
-		for (unsigned int i = 0; i < lightPositions.size(); i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightPositions[i]);
-			model = glm::scale(model, glm::vec3(0.125f));
-			shaderLightBox.setMat4("model", model);
-			shaderLightBox.setVec3("lightColor", lightColors[i]);
-			renderCube();
-		}
+		renderScene(pbShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -370,77 +236,22 @@ void renderQuad()
 	glBindVertexArray(0);
 }
 
-// renderCube() renders a 1x1 3D cube in NDC.
-// -------------------------------------------------
-unsigned int cubeVAO = 0;
-unsigned int cubeVBO = 0;
-void renderCube()
-{
-	// initialize (if necessary)
-	if (cubeVAO == 0)
-	{
-		float vertices[] = {
-			// back face
-			-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-			 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-			 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-			 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-			-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-			-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-			// front face
-			-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-			 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-			 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-			 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-			-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-			-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-			// left face
-			-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-			-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-			-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-			-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-			-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-			-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-			// right face
-			 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-			 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-			 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-			 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-			 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-			 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-			// bottom face
-			-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-			 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-			 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-			 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-			-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-			-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-			// top face
-			-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-			 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-			 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-			 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-			-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-			-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
-		};
-		glGenVertexArrays(1, &cubeVAO);
-		glGenBuffers(1, &cubeVBO);
-		// fill buffer
-		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		// link vertex attributes
-		glBindVertexArray(cubeVAO);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+void renderScene(Shader shader) {
+
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 7; j++) {
+			glm::mat4 model(1.0);
+			model = glm::translate(model, glm::vec3(i - 3.0f, j - 3.0f, -2.0f));
+			model = glm::scale(model, glm::vec3(0.49f, 0.49f, 1.0f));
+			shader.use();
+			shader.setMat4("model", model);
+
+			float roughness = (i + 0.05) / 6.1f;
+			float metallic = (j + 0.05) / 6.1f;
+			shader.setFloat("roughness", roughness);
+			shader.setFloat("metallic", metallic);
+
+			renderQuad();
+		}
 	}
-	// render Cube
-	glBindVertexArray(cubeVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
 }
